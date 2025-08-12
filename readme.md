@@ -1,4 +1,32 @@
+## BrainCorp gentle-fork of:
+
 <p align="center"><img src="doc/img/realsense.png" width="70%" /><br><br></p>
+
+## tl;dr
+
+Allows us to build python bindings for in-house versions of Python (initially python3.12)
+
+```
+sudo apt install python3.12... # install our in-house python3 packages, including -dev and lib- -- grab the debs, add the repo, whatever
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
+
+# install librealsense build deps
+sudo apt-get install -y libx11-dev xorg-dev libglu1-mesa-dev libusb-1.0-0-dev libudev-dev
+mkdir build && cd build
+git checkout v2.56.5 # or whatever
+cmake ../ -DBUILD_PYTHON_BINDINGS:bool=true -DPYTHON_EXECUTABLE=$(which python3.12) -DREQUIRED_PYTHON_VER=3.12
+make -j4
+
+# install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+cp -r ../wrappers/python/ Release/
+cp Release/pyr*so* Release/python/pyrealsense2/
+cd Release/python/
+echo '__version__ = "2.56.5.9999"' > pyrealsense2/_version.py
+uv build --wheel
+# do stuff with `dist/pyrealsense2-2.56.5.9999-cp312-cp312-linux_x86_64.whl`
+```
 
 -----------------
 [![License](https://img.shields.io/github/license/IntelRealSense/librealsense.svg)](https://www.apache.org/licenses/LICENSE-2.0)

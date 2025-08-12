@@ -71,7 +71,7 @@ function(get_pybind11)
       find_package(PythonLibs REQUIRED)
       set( PYTHON_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/pyrealsense2" CACHE PATH "Installation directory for Python bindings")
     else()
-      find_package(Python REQUIRED COMPONENTS Interpreter Development)
+      find_package(Python ${REQUIRED_PYTHON_VER} REQUIRED COMPONENTS Interpreter Development)
       set( PYTHON_INSTALL_DIR "${Python_SITEARCH}/pyrealsense2" CACHE PATH "Installation directory for Python bindings")
     endif()
 
