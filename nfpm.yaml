@@ -1,0 +1,42 @@
+# This is an example nfpm configuration file.
+# Make sure to check the documentation at https://nfpm.goreleaser.com
+#
+# The lines below are called `modelines`. See `:help modeline`
+# Feel free to remove those if you don't want/need to use them.
+# yaml-language-server: $schema=https://nfpm.goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+name: "librealsense2-brainos"
+arch: ${DEBIAN_ARCH}
+platform: "linux"
+version: ${TARGET_VERSION}
+section: "default"
+priority: "extra"
+depends:
+  - python3.12
+provides:
+  - librealsense2
+  - librealsense2-gl
+  - librealsense2-utils
+  - librealsense2-udev
+maintainer: "Platform devs <platform@braincorp.com>"
+description: |
+  A package for librealsense2 
+vendor: "BrainCorp"
+homepage: "https://github.com/billsanders-bc/librealsense"
+license: "Apache 2"
+contents:
+  - src: ./build/Release/librealsense2*so*
+    dst: /usr/lib/${TARGET_ARCH}-linux-gnu/
+    expand: true
+
+    # do we need all this junk?  'rs-hello-realsense'?
+  - src: ./build/Release/rs-*
+    dst: /usr/bin/
+  - src: ./build/Release/realsense-viewer
+    dst: /usr/bin/
+
+    # borrowed from the ubuntu package:
+    # librealsense2-udev-rules:arm64	2.54.2-0~realsense.2181
+  - src: ./60-librealsense2-udev-rules.rules
+    dst: /lib/udev/rules.d/60-librealsense2-udev-rules.rules

@@ -4,6 +4,14 @@
 
 ## tl;dr
 
+> Note that the master branch has commits/files which may need to be cherry-picked on top of whatever version you're trying to build.  In particular, changes include:
+
+* ./CMake/external_pybind11.cmake
+* ./60-librealsense2-udev-rules.rules
+* ./nfpm.yaml
+* ./nfpm-devpkg.yaml
+
+
 Allows us to build python bindings for in-house versions of Python (initially python3.12)
 
 ```
@@ -26,6 +34,25 @@ cd Release/python/
 echo '__version__ = "2.56.5.9999"' > pyrealsense2/_version.py
 uv build --wheel
 # do stuff with `dist/pyrealsense2-2.56.5.9999-cp312-cp312-linux_x86_64.whl`
+```
+
+Apparently we also need the actual lib's and bin's and headers and who knows what else from this project, who knew.
+
+```
+# after building above, let's create a deb, need one for arm and one for x86
+# Install `nfpm` for simplicity:
+# Arm:
+curl -L -O https://github.com/goreleaser/nfpm/releases/download/v2.43.0/nfpm_2.43.0_arm64.deb
+dpkg -i ./nfpm*deb
+DEBIAN_ARCH=arm64 TARGET_VERSION=2.56.5 TARGET_ARCH=aarch64 nfpm package --packager deb
+DEBIAN_ARCH=arm64 TARGET_VERSION=2.56.5 TARGET_ARCH=aarch64 nfpm --config nfpm-devpkg.yaml package --packager deb
+# x86:
+curl -L -O https://github.com/goreleaser/nfpm/releases/download/v2.43.0/nfpm_2.43.0_amd64.deb
+dpkg -i ./nfpm*deb
+DEBIAN_ARCH=amd64 TARGET_VERSION=2.56.5 TARGET_ARCH=x86_64 nfpm package --packager deb
+DEBIAN_ARCH=amd64 TARGET_VERSION=2.56.5 TARGET_ARCH=x86_64 nfpm --config nfpm-devpkg.yaml package --packager deb
+
+# upload deb's to GCP Artifact Registry
 ```
 
 -----------------
